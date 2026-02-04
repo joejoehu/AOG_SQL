@@ -542,7 +542,7 @@ resource "azurerm_virtual_machine_extension" "dc_vm1_setup" {
   })
 
   protected_settings = jsonencode({
-    fileUris            = ["https://raw.githubusercontent.com/example/scripts/main/configure-dc.ps1"]
+    fileUris            = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
     commandToExecute    = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $true"
   })
 
@@ -568,7 +568,7 @@ resource "azurerm_virtual_machine_extension" "dc_vm2_setup" {
   })
 
   protected_settings = jsonencode({
-    fileUris            = ["https://raw.githubusercontent.com/example/scripts/main/configure-dc.ps1"]
+    fileUris            = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
     commandToExecute    = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $false"
   })
 
