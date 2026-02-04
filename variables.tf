@@ -1,5 +1,5 @@
 variable "subscription_id" {
-  description = "45befe1a-5a11-4644-8876-273bdf9e6a68"
+  description = "Your subscription ID"
   type        = string
   sensitive   = true
 }
