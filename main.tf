@@ -538,12 +538,11 @@ resource "azurerm_virtual_machine_extension" "dc_vm1_setup" {
   auto_upgrade_minor_version = true
 
   settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1"
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
   })
 
   protected_settings = jsonencode({
-    fileUris            = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
-    commandToExecute    = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $true"
+    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $true"
   })
 
   depends_on = [
@@ -564,12 +563,11 @@ resource "azurerm_virtual_machine_extension" "dc_vm2_setup" {
   auto_upgrade_minor_version = true
 
   settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1"
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
   })
 
   protected_settings = jsonencode({
-    fileUris            = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
-    commandToExecute    = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $false"
+    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $false"
   })
 
   depends_on = [
@@ -671,12 +669,10 @@ resource "azurerm_virtual_machine_extension" "sql_vm1_setup" {
   auto_upgrade_minor_version = true
 
   settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-sql.ps1"
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-sql.ps1"]
   })
 
   protected_settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/example/scripts/main/configure-sql.ps1",
-    "https://raw.githubusercontent.com/example/scripts/main/setup-ag.ps1"]
     commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-1'"
   })
 
@@ -699,12 +695,10 @@ resource "azurerm_virtual_machine_extension" "sql_vm2_setup" {
   auto_upgrade_minor_version = true
 
   settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-sql.ps1"
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-sql.ps1"]
   })
 
   protected_settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/example/scripts/main/configure-sql.ps1",
-    "https://raw.githubusercontent.com/example/scripts/main/setup-ag.ps1"]
     commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-2'"
   })
 
