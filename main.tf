@@ -542,7 +542,7 @@ resource "azurerm_virtual_machine_extension" "dc_vm1_setup" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $true"
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $true"
   })
 
   depends_on = [
@@ -567,7 +567,7 @@ resource "azurerm_virtual_machine_extension" "dc_vm2_setup" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $false"
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $false"
   })
 
   depends_on = [
@@ -673,7 +673,7 @@ resource "azurerm_virtual_machine_extension" "sql_vm1_setup" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-1'"
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-1'"
   })
 
   depends_on = [
@@ -699,7 +699,7 @@ resource "azurerm_virtual_machine_extension" "sql_vm2_setup" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Unrestricted -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-2'"
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-2'"
   })
 
   depends_on = [
