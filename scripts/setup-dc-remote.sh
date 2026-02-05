@@ -512,7 +512,7 @@ phase_update_vnet_dns() {
         --resource-group "$RESOURCE_GROUP" \
         --name "$VM_NAME" \
         --query "[0].virtualMachine.network.privateIpAddresses[0]" \
-        --output tsv
+        --output tsv)
     
     if [[ -z "$dc_ip" ]]; then
         error "Failed to retrieve DC IP address"
