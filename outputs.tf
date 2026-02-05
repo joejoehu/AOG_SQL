@@ -147,17 +147,17 @@ output "sql_vm1_name" {
 
 output "sql_vm1_primary_ip" {
   description = "SQL VM 1 Primary Network Interface IP (Database)"
-  value       = azurerm_network_interface.sql_vm1_nic_primary.private_ip_address
+  value       = "10.38.1.4"
 }
 
 output "sql_vm1_cluster_ip" {
   description = "SQL VM 1 Cluster Network Interface IP (Cluster Communication)"
-  value       = azurerm_network_interface.sql_vm1_nic_cluster.private_ip_address
+  value       = "10.38.1.10"
 }
 
 output "sql_vm1_listener_ip" {
   description = "SQL VM 1 Listener Network Interface IP (AG Listener)"
-  value       = azurerm_network_interface.sql_vm1_nic_listener.private_ip_address
+  value       = "10.38.1.11"
 }
 
 output "sql_vm1_fqdn" {
@@ -181,17 +181,17 @@ output "sql_vm2_name" {
 
 output "sql_vm2_primary_ip" {
   description = "SQL VM 2 Primary Network Interface IP (Database)"
-  value       = azurerm_network_interface.sql_vm2_nic_primary.private_ip_address
+  value       = "10.38.2.4"
 }
 
 output "sql_vm2_cluster_ip" {
   description = "SQL VM 2 Cluster Network Interface IP (Cluster Communication)"
-  value       = azurerm_network_interface.sql_vm2_nic_cluster.private_ip_address
+  value       = "10.38.2.10"
 }
 
 output "sql_vm2_listener_ip" {
   description = "SQL VM 2 Listener Network Interface IP (AG Listener)"
-  value       = azurerm_network_interface.sql_vm2_nic_listener.private_ip_address
+  value       = "10.38.2.11"
 }
 
 output "sql_vm2_fqdn" {
@@ -233,8 +233,8 @@ output "credentials_summary" {
     sql_service_account          = "redcross\\sql_service"
     dc_vm1_ip                    = azurerm_network_interface.dc_vm1_nic.private_ip_address
     dc_vm2_ip                    = azurerm_network_interface.dc_vm2_nic.private_ip_address
-    sql_vm1_primary_ip           = azurerm_network_interface.sql_vm1_nic_primary.private_ip_address
-    sql_vm2_primary_ip           = azurerm_network_interface.sql_vm2_nic_primary.private_ip_address
+    sql_vm1_primary_ip           = "10.38.1.4"
+    sql_vm2_primary_ip           = "10.38.2.4"
     ag_listener_ips              = ["10.38.1.11", "10.38.2.11"]
     ag_listener_port             = "1433"
     sql_endpoint_port            = "5022"

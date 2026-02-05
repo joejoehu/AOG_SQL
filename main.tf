@@ -341,9 +341,9 @@ resource "azurerm_network_interface" "dc_vm2_nic" {
   tags = local.common_tags
 }
 
-# SQL-VM-1 Primary NIC
-resource "azurerm_network_interface" "sql_vm1_nic_primary" {
-  name                = "nic-sql-vm1-primary"
+# SQL-VM-1 NIC with multiple IP configurations
+resource "azurerm_network_interface" "sql_vm1_nic" {
+  name                = "nic-sql-vm1"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -355,30 +355,12 @@ resource "azurerm_network_interface" "sql_vm1_nic_primary" {
     primary                       = true
   }
 
-  tags = local.common_tags
-}
-
-# SQL-VM-1 Cluster NIC
-resource "azurerm_network_interface" "sql_vm1_nic_cluster" {
-  name                = "nic-sql-vm1-cluster"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
   ip_configuration {
     name                          = "ipconfig2"
     subnet_id                     = azurerm_subnet.sql_subnet_1.id
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.38.1.10"
   }
-
-  tags = local.common_tags
-}
-
-# SQL-VM-1 Listener NIC
-resource "azurerm_network_interface" "sql_vm1_nic_listener" {
-  name                = "nic-sql-vm1-listener"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
 
   ip_configuration {
     name                          = "ipconfig3"
@@ -390,9 +372,9 @@ resource "azurerm_network_interface" "sql_vm1_nic_listener" {
   tags = local.common_tags
 }
 
-# SQL-VM-2 Primary NIC
-resource "azurerm_network_interface" "sql_vm2_nic_primary" {
-  name                = "nic-sql-vm2-primary"
+# SQL-VM-2 NIC with multiple IP configurations
+resource "azurerm_network_interface" "sql_vm2_nic" {
+  name                = "nic-sql-vm2"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
 
@@ -404,30 +386,12 @@ resource "azurerm_network_interface" "sql_vm2_nic_primary" {
     primary                       = true
   }
 
-  tags = local.common_tags
-}
-
-# SQL-VM-2 Cluster NIC
-resource "azurerm_network_interface" "sql_vm2_nic_cluster" {
-  name                = "nic-sql-vm2-cluster"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
-
   ip_configuration {
     name                          = "ipconfig2"
     subnet_id                     = azurerm_subnet.sql_subnet_2.id
     private_ip_address_allocation = "Static"
     private_ip_address            = "10.38.2.10"
   }
-
-  tags = local.common_tags
-}
-
-# SQL-VM-2 Listener NIC
-resource "azurerm_network_interface" "sql_vm2_nic_listener" {
-  name                = "nic-sql-vm2-listener"
-  location            = azurerm_resource_group.main.location
-  resource_group_name = azurerm_resource_group.main.name
 
   ip_configuration {
     name                          = "ipconfig3"
@@ -586,9 +550,7 @@ resource "azurerm_windows_virtual_machine" "sql_vm1" {
   admin_password = local.domain_admin_password
 
   network_interface_ids = [
-    azurerm_network_interface.sql_vm1_nic_primary.id,
-    azurerm_network_interface.sql_vm1_nic_cluster.id,
-    azurerm_network_interface.sql_vm1_nic_listener.id
+    azurerm_network_interface.sql_vm1_nic.id
   ]
 
   os_disk {
@@ -623,9 +585,7 @@ resource "azurerm_windows_virtual_machine" "sql_vm2" {
   admin_password = local.domain_admin_password
 
   network_interface_ids = [
-    azurerm_network_interface.sql_vm2_nic_primary.id,
-    azurerm_network_interface.sql_vm2_nic_cluster.id,
-    azurerm_network_interface.sql_vm2_nic_listener.id
+    azurerm_network_interface.sql_vm2_nic.id
   ]
 
   os_disk {
