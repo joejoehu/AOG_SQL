@@ -608,3 +608,47 @@ resource "azurerm_windows_virtual_machine" "sql_vm2" {
 
   tags = local.common_tags
 }
+
+# ============================================================================
+# DATA DISKS FOR SQL SERVER VMs
+# ============================================================================
+
+# Data Disk for SQL-VM-1
+resource "azurerm_managed_disk" "sql_vm1_data_disk" {
+  name                = "disk-sql-vm1-data"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  storage_account_type = "Standard_LRS"
+  create_option       = "Empty"
+  disk_size_gb        = 32
+  zone                = "1"
+
+  tags = local.common_tags
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "sql_vm1_data_disk_attach" {
+  managed_disk_id    = azurerm_managed_disk.sql_vm1_data_disk.id
+  virtual_machine_id = azurerm_windows_virtual_machine.sql_vm1.id
+  lun                = 0
+  caching            = "ReadWrite"
+}
+
+# Data Disk for SQL-VM-2
+resource "azurerm_managed_disk" "sql_vm2_data_disk" {
+  name                = "disk-sql-vm2-data"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  storage_account_type = "Standard_LRS"
+  create_option       = "Empty"
+  disk_size_gb        = 32
+  zone                = "2"
+
+  tags = local.common_tags
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "sql_vm2_data_disk_attach" {
+  managed_disk_id    = azurerm_managed_disk.sql_vm2_data_disk.id
+  virtual_machine_id = azurerm_windows_virtual_machine.sql_vm2.id
+  lun                = 0
+  caching            = "ReadWrite"
+}
