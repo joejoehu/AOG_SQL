@@ -102,6 +102,7 @@ try {
     
     # Configure DNS forwarders
     Write-Log "Configuring DNS..."
+    Start-Sleep -Seconds 30
     Add-DnsServerForwarder -IPAddress 8.8.8.8, 8.8.4.4 -PassThru -Confirm:$false | Out-Null
     
     # Configure firewall rules for AD/DNS

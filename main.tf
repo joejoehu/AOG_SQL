@@ -65,6 +65,7 @@ resource "azurerm_virtual_network" "main" {
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
   address_space       = [var.vnet_cidr]
+  dns_servers         = ["10.38.0.4"]
   tags                = local.common_tags
 }
 
