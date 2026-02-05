@@ -527,55 +527,49 @@ resource "azurerm_windows_virtual_machine" "dc_vm2" {
 }
 
 # ============================================================================
-# CUSTOM SCRIPT EXTENSION FOR DC-VM-1 (AD/DNS Installation)
+# DATA DISKS FOR DOMAIN CONTROLLER VMs
 # ============================================================================
 
-resource "azurerm_virtual_machine_extension" "dc_vm1_setup" {
-  name                       = "DC-VM1-Setup"
-  virtual_machine_id         = azurerm_windows_virtual_machine.dc_vm1.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.10"
-  auto_upgrade_minor_version = true
+# Data Disk for DC-VM-1
+resource "azurerm_managed_disk" "dc_vm1_data_disk" {
+  name                = "disk-dc-vm1-data"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  storage_account_type = "Standard_LRS"
+  create_option       = "Empty"
+  disk_size_gb        = 32
+  zone                = "1"
 
-  settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $true"
-  })
-
-  depends_on = [
-    azurerm_windows_virtual_machine.dc_vm1
-  ]
+  tags = local.common_tags
 }
 
-# ============================================================================
-# CUSTOM SCRIPT EXTENSION FOR DC-VM-2 (AD/DNS Installation)
-# ============================================================================
-
-resource "azurerm_virtual_machine_extension" "dc_vm2_setup" {
-  name                       = "DC-VM2-Setup"
-  virtual_machine_id         = azurerm_windows_virtual_machine.dc_vm2.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.10"
-  auto_upgrade_minor_version = true
-
-  settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-dc.ps1"]
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-dc.ps1 -DomainName '${local.domain_name}' -DomainAdminPassword '${local.domain_admin_password}' -LocalAdminPassword '${local.local_admin_password}' -IsFirstDC $false"
-  })
-
-  depends_on = [
-    azurerm_windows_virtual_machine.dc_vm2,
-    azurerm_virtual_machine_extension.dc_vm1_setup
-  ]
+resource "azurerm_virtual_machine_data_disk_attachment" "dc_vm1_data_disk_attach" {
+  managed_disk_id    = azurerm_managed_disk.dc_vm1_data_disk.id
+  virtual_machine_id = azurerm_windows_virtual_machine.dc_vm1.id
+  lun                = 0
+  caching            = "ReadWrite"
 }
+
+# Data Disk for DC-VM-2
+resource "azurerm_managed_disk" "dc_vm2_data_disk" {
+  name                = "disk-dc-vm2-data"
+  location            = azurerm_resource_group.main.location
+  resource_group_name = azurerm_resource_group.main.name
+  storage_account_type = "Standard_LRS"
+  create_option       = "Empty"
+  disk_size_gb        = 32
+  zone                = "2"
+
+  tags = local.common_tags
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "dc_vm2_data_disk_attach" {
+  managed_disk_id    = azurerm_managed_disk.dc_vm2_data_disk.id
+  virtual_machine_id = azurerm_windows_virtual_machine.dc_vm2.id
+  lun                = 0
+  caching            = "ReadWrite"
+}
+
 
 # ============================================================================
 # SQL SERVER VMs
@@ -606,14 +600,13 @@ resource "azurerm_windows_virtual_machine" "sql_vm1" {
   source_image_reference {
     publisher = "MicrosoftSQLServer"
     offer     = "sql2022-ws2022"
-    sku       = "standard"
+    sku       = "sqldev-gen2"
     version   = "latest"
   }
 
   depends_on = [
     azurerm_windows_virtual_machine.dc_vm1,
-    azurerm_windows_virtual_machine.dc_vm2,
-    azurerm_virtual_machine_extension.dc_vm1_setup
+    azurerm_windows_virtual_machine.dc_vm2
   ]
 
   tags = local.common_tags
@@ -644,67 +637,14 @@ resource "azurerm_windows_virtual_machine" "sql_vm2" {
   source_image_reference {
     publisher = "MicrosoftSQLServer"
     offer     = "sql2022-ws2022"
-    sku       = "standard"
+    sku       = "sqldev-gen2"
     version   = "latest"
   }
 
   depends_on = [
     azurerm_windows_virtual_machine.dc_vm1,
-    azurerm_windows_virtual_machine.dc_vm2,
-    azurerm_virtual_machine_extension.dc_vm1_setup
+    azurerm_windows_virtual_machine.dc_vm2
   ]
 
   tags = local.common_tags
-}
-
-# ============================================================================
-# CUSTOM SCRIPT EXTENSION FOR SQL-VM-1 (Domain Join, SQL Setup, AG Config)
-# ============================================================================
-
-resource "azurerm_virtual_machine_extension" "sql_vm1_setup" {
-  name                       = "SQL-VM1-Setup"
-  virtual_machine_id         = azurerm_windows_virtual_machine.sql_vm1.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.10"
-  auto_upgrade_minor_version = true
-
-  settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-sql.ps1"]
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-1'"
-  })
-
-  depends_on = [
-    azurerm_windows_virtual_machine.sql_vm1,
-    azurerm_virtual_machine_extension.dc_vm2_setup
-  ]
-}
-
-# ============================================================================
-# CUSTOM SCRIPT EXTENSION FOR SQL-VM-2 (Domain Join, SQL Setup, AG Config)
-# ============================================================================
-
-resource "azurerm_virtual_machine_extension" "sql_vm2_setup" {
-  name                       = "SQL-VM2-Setup"
-  virtual_machine_id         = azurerm_windows_virtual_machine.sql_vm2.id
-  publisher                  = "Microsoft.Compute"
-  type                       = "CustomScriptExtension"
-  type_handler_version       = "1.10"
-  auto_upgrade_minor_version = true
-
-  settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/configure-sql.ps1"]
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File configure-sql.ps1 -DomainName '${local.domain_name}' -DomainAdminUser '${local.domain_admin_username}' -DomainAdminPassword '${local.domain_admin_password}' -SQLServiceAccount '${local.sql_service_account}' -SQLServicePassword '${local.sql_service_password}' -LocalAdminPassword '${local.local_admin_password}' -VMName 'vm-sql-2'"
-  })
-
-  depends_on = [
-    azurerm_windows_virtual_machine.sql_vm2,
-    azurerm_virtual_machine_extension.dc_vm2_setup
-  ]
 }
