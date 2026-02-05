@@ -511,7 +511,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "dc_vm1_data_disk_attach
   managed_disk_id    = azurerm_managed_disk.dc_vm1_data_disk.id
   virtual_machine_id = azurerm_windows_virtual_machine.dc_vm1.id
   lun                = 0
-  caching            = "ReadWrite"
+  caching            = "None"
 }
 
 # Data Disk for DC-VM-2
@@ -531,7 +531,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "dc_vm2_data_disk_attach
   managed_disk_id    = azurerm_managed_disk.dc_vm2_data_disk.id
   virtual_machine_id = azurerm_windows_virtual_machine.dc_vm2.id
   lun                = 0
-  caching            = "ReadWrite"
+  caching            = "None"
 }
 
 
