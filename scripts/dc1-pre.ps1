@@ -55,9 +55,12 @@ Install-ADDSForest `
     -SysvolPath $SysvolPath `
     -InstallDns `
     -CreateDnsDelegation:$false `
-    -NoRebootOnCompletion:$false `
+    -NoRebootOnCompletion:$true `
     -Force
 
-# The system will automatically reboot
+Start-Sleep -Seconds 30
+Restart-Computer -Delay 300 -Force
+
+# The system will  reboot
 
 
