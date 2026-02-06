@@ -221,6 +221,12 @@ output "local_admin_secret_id" {
   sensitive   = true
 }
 
+output "dsrm_secret_id" {
+  description = "DSRM Password Secret ID"
+  value       = azurerm_key_vault_secret.dsrm_password.id
+  sensitive   = true
+}
+
 # ============================================================================
 # CREDENTIALS SUMMARY (For Reference)
 # ============================================================================

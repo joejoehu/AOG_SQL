@@ -59,6 +59,13 @@ resource "azurerm_key_vault_secret" "local_admin_password" {
   key_vault_id = azurerm_key_vault.main.id
 }
 
+# Store DSRM Password in Key Vault
+resource "azurerm_key_vault_secret" "dsrm_password" {
+  name         = "dsrm-password"
+  value        = local.dsrm_password
+  key_vault_id = azurerm_key_vault.main.id
+}
+
 # Virtual Network
 resource "azurerm_virtual_network" "main" {
   name                = var.vnet_name

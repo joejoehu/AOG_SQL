@@ -10,6 +10,7 @@ locals {
   domain_admin_password    = random_password.domain_admin.result
   sql_service_password     = random_password.sql_service.result
   local_admin_password     = random_password.local_admin.result
+  dsrm_password            = random_password.dsrm.result
   
   # Tags
   common_tags = merge(
@@ -34,6 +35,12 @@ resource "random_password" "sql_service" {
 }
 
 resource "random_password" "local_admin" {
+  length  = 32
+  special = true
+  override_special = "!@#$%^&*()-_=+[]{}<>:?"
+}
+
+resource "random_password" "dsrm" {
   length  = 32
   special = true
   override_special = "!@#$%^&*()-_=+[]{}<>:?"
