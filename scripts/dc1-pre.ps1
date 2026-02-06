@@ -1,60 +1,77 @@
-# Run in PowerShell on the VM after attaching disk in Azure Portal
-Get-Disk | Where-Object PartitionStyle -eq 'RAW' | 
-    Initialize-Disk -PartitionStyle GPT -PassThru | 
-    New-Partition -DriveLetter F -UseMaximumSize | 
-    Format-Volume -FileSystem NTFS -NewFileSystemLabel "AD_DATA" -Confirm:$false
+# DC1 Stage 1 - Promote to Domain Controller
+# Designed to run via Azure Custom Script Extension (no interactive prompts, clean exit)
 
-# Create directories
-New-Item -Path "F:\NTDS" -ItemType Directory -Force
-New-Item -Path "F:\SYSVOL" -ItemType Directory -Force
-
-# Run in PowerShell as Administrator
-$InterfaceAlias = Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -ExpandProperty Name
-Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses "127.0.0.1"
-
-# Verify
-Get-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -AddressFamily IPv4
-
-# Enable transcript logging
+# Enable transcript logging first so all output is captured
 Start-Transcript -Path "C:\DCSetup-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
 
-# Install roles
-Install-WindowsFeature -Name AD-Domain-Services, DNS -IncludeManagementTools
+try {
+    # ========================================================================
+    # DISK INITIALIZATION
+    # ========================================================================
+    Write-Output "=== Initializing data disk ==="
+    Get-Disk | Where-Object PartitionStyle -eq 'RAW' |
+        Initialize-Disk -PartitionStyle GPT -PassThru |
+        New-Partition -DriveLetter F -UseMaximumSize |
+        Format-Volume -FileSystem NTFS -NewFileSystemLabel "AD_DATA" -Confirm:$false
 
-# Verify installation
-Get-WindowsFeature | Where-Object {$_.Name -like "*AD-Domain*" -or $_.Name -eq "DNS"}
+    New-Item -Path "F:\NTDS" -ItemType Directory -Force
+    New-Item -Path "F:\SYSVOL" -ItemType Directory -Force
 
+    # ========================================================================
+    # INSTALL AD DS AND DNS ROLES
+    # ========================================================================
+    Write-Output "=== Installing AD-Domain-Services and DNS roles ==="
+    Install-WindowsFeature -Name AD-Domain-Services, DNS -IncludeManagementTools
 
-sleep 300
+    Get-WindowsFeature | Where-Object {$_.Name -like "*AD-Domain*" -or $_.Name -eq "DNS"}
 
-# Define your domain name
-$DomainName = "redcross.local"  # Change this to your domain
-$NetBiosName = "REDCROSS"             # Change this (15 chars max)
+    # ========================================================================
+    # PROMOTE TO DOMAIN CONTROLLER
+    # ========================================================================
+    Write-Output "=== Promoting to Domain Controller ==="
 
-# Hardcoded DSRM password
-$DSRMPassword = ConvertTo-SecureString "PassWodrd73124@" -AsPlainText -Force
+    $DomainName    = "redcross.local"
+    $NetBiosName   = "REDCROSS"
+    $DSRMPassword  = ConvertTo-SecureString "PassWodrd73124@" -AsPlainText -Force
+    $DatabasePath  = "F:\NTDS"
+    $LogPath       = "F:\NTDS"
+    $SysvolPath    = "F:\SYSVOL"
 
+    Install-ADDSForest `
+        -DomainName $DomainName `
+        -DomainNetbiosName $NetBiosName `
+        -SafeModeAdministratorPassword $DSRMPassword `
+        -DatabasePath $DatabasePath `
+        -LogPath $LogPath `
+        -SysvolPath $SysvolPath `
+        -InstallDns `
+        -CreateDnsDelegation:$false `
+        -NoRebootOnCompletion:$true `
+        -Force
 
-# Use data disk if created, otherwise use C: drive
-$DatabasePath = "F:\NTDS"
-$LogPath = "F:\NTDS"
-$SysvolPath = "F:\SYSVOL"
+    # ========================================================================
+    # SET DNS (after DNS server is installed via AD promotion)
+    # ========================================================================
+    Write-Output "=== Configuring DNS client to use localhost + Azure DNS ==="
+    $InterfaceAlias = Get-NetAdapter | Where-Object Status -eq 'Up' | Select-Object -ExpandProperty Name
+    Set-DnsClientServerAddress -InterfaceAlias $InterfaceAlias -ServerAddresses ("127.0.0.1","168.63.129.16")
 
-# If using C: drive (not recommended for production)
-# $DatabasePath = "C:\Windows\NTDS"
-# $LogPath = "C:\Windows\NTDS"
-# $SysvolPath = "C:\Windows\SYSVOL"
+    # ========================================================================
+    # SCHEDULE REBOOT (gives extension time to report success)
+    # ========================================================================
+    Write-Output "=== Scheduling reboot in 60 seconds ==="
+    shutdown /r /t 60 /f /c "Rebooting after DC promotion"
 
-# Promote to DC and create new forest
-Install-ADDSForest `
-    -DomainName $DomainName `
-    -DomainNetbiosName $NetBiosName `
-    -SafeModeAdministratorPassword $DSRMPassword `
-    -DatabasePath $DatabasePath `
-    -LogPath $LogPath `
-    -SysvolPath $SysvolPath `
-    -InstallDns `
-    -CreateDnsDelegation:$false `
-    -NoRebootOnCompletion:$false `
-    -Force
+    Write-Output "=== DC1 Stage 1 completed successfully ==="
+}
+catch {
+    Write-Output "ERROR: $_"
+    Write-Output $_.ScriptStackTrace
+}
+finally {
+    Stop-Transcript
+}
+
+# Always exit 0 so the Custom Script Extension reports success
+exit 0
 
