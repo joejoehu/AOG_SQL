@@ -31,8 +31,8 @@ sleep 300
 $DomainName = "redcross.local"  # Change this to your domain
 $NetBiosName = "REDCROSS"             # Change this (15 chars max)
 
-# Prompt for DSRM password securely
-$DSRMPassword = Read-Host -AsSecureString -Prompt "Enter Directory Services Restore Mode (DSRM) Password"
+# Hardcoded DSRM password
+$DSRMPassword = ConvertTo-SecureString "PassWodrd73124@" -AsPlainText -Force
 
 
 # Use data disk if created, otherwise use C: drive

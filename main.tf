@@ -462,6 +462,33 @@ resource "azurerm_windows_virtual_machine" "dc_vm1" {
   tags = local.common_tags
 }
 
+# Stage 1 custom script extension for DC-VM-1
+resource "azurerm_windows_virtual_machine_extension" "dc1_stage1_cse" {
+  name                 = "dc1-stage1-cse"
+  virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm1.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = jsonencode({
+    fileUris         = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/dc1-pre.ps1"]
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File dc1-pre.ps1"
+  })
+
+  depends_on = [
+    azurerm_windows_virtual_machine.dc_vm1,
+    azurerm_windows_virtual_machine.dc_vm2,
+    azurerm_windows_virtual_machine.sql_vm1,
+    azurerm_windows_virtual_machine.sql_vm2,
+    azurerm_virtual_machine_data_disk_attachment.dc_vm1_data_disk_attach,
+    azurerm_virtual_machine_data_disk_attachment.dc_vm2_data_disk_attach,
+    azurerm_virtual_machine_data_disk_attachment.sql_vm1_data_disk_attach,
+    azurerm_virtual_machine_data_disk_attachment.sql_vm2_data_disk_attach
+  ]
+
+  tags = local.common_tags
+}
+
 resource "azurerm_windows_virtual_machine" "dc_vm2" {
   name                = "vm-dc-2"
   location            = azurerm_resource_group.main.location
