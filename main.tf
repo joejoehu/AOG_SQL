@@ -463,7 +463,7 @@ resource "azurerm_windows_virtual_machine" "dc_vm1" {
 }
 
 # Stage 1 custom script extension for DC-VM-1
-resource "azurerm_windows_virtual_machine_extension" "dc1_stage1_cse" {
+resource "azurerm_virtual_machine_extension" "dc1_stage1_cse" {
   name                 = "dc1-stage1-cse"
   virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm1.id
   publisher            = "Microsoft.Compute"
