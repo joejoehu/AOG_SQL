@@ -179,6 +179,18 @@ resource "azurerm_network_security_group" "dc_nsg" {
   }
 
   security_rule {
+    name                       = "AllowICMP"
+    priority                   = 105
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Icmp"
+    source_port_range          = "*"
+    destination_port_range     = "*"
+    source_address_prefix      = "10.38.0.0/16"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
     name                       = "DenyAllInbound"
     priority                   = 4096
     direction                  = "Inbound"
