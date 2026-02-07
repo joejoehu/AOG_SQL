@@ -1,3 +1,8 @@
+param(
+    [Parameter(Mandatory = $true)]
+    [string]$DSRMPasswordPlainText
+)
+
 # DC1 Stage 1 - Promote to Domain Controller
 # Designed to run via Azure Custom Script Extension (no interactive prompts, clean exit)
 
@@ -32,7 +37,7 @@ try {
 
     $DomainName    = "redcross.local"
     $NetBiosName   = "REDCROSS"
-    $DSRMPassword  = ConvertTo-SecureString "PassWodrd73124@" -AsPlainText -Force
+    $DSRMPassword  = ConvertTo-SecureString $DSRMPasswordPlainText -AsPlainText -Force
     $DatabasePath  = "F:\NTDS"
     $LogPath       = "F:\NTDS"
     $SysvolPath    = "F:\SYSVOL"
