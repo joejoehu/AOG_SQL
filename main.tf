@@ -473,7 +473,9 @@ resource "azurerm_windows_virtual_machine" "dc_vm1" {
   tags = local.common_tags
 }
 
-# Stage 1 custom script extension for DC-VM-1
+# ============================================================================
+# STAGE 1 CUSTOM SCRIPT EXTENSION FOR DC-VM-1
+# ============================================================================
 resource "azurerm_virtual_machine_extension" "dc1_stage1_cse" {
   name                 = "dc1-stage1-cse"
   virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm1.id
