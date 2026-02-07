@@ -547,9 +547,9 @@ resource "azurerm_managed_disk" "dc_vm1_data_disk" {
   name                = "disk-dc-vm1-data"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  storage_account_type = "Standard_LRS"
+  storage_account_type = var.storage_account_type
   create_option       = "Empty"
-  disk_size_gb        = 32
+  disk_size_gb        = var.data_disk_size_gb
   zone                = "1"
 
   tags = local.common_tags
@@ -567,9 +567,9 @@ resource "azurerm_managed_disk" "dc_vm2_data_disk" {
   name                = "disk-dc-vm2-data"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  storage_account_type = "Standard_LRS"
+  storage_account_type = var.storage_account_type
   create_option       = "Empty"
-  disk_size_gb        = 32
+  disk_size_gb        = var.data_disk_size_gb
   zone                = "2"
 
   tags = local.common_tags
@@ -666,9 +666,9 @@ resource "azurerm_managed_disk" "sql_vm1_data_disk" {
   name                = "disk-sql-vm1-data"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  storage_account_type = "Standard_LRS"
+  storage_account_type = var.storage_account_type
   create_option       = "Empty"
-  disk_size_gb        = 32
+  disk_size_gb        = var.data_disk_size_gb
   zone                = "1"
 
   tags = local.common_tags
@@ -686,9 +686,9 @@ resource "azurerm_managed_disk" "sql_vm2_data_disk" {
   name                = "disk-sql-vm2-data"
   location            = azurerm_resource_group.main.location
   resource_group_name = azurerm_resource_group.main.name
-  storage_account_type = "Standard_LRS"
+  storage_account_type = var.storage_account_type
   create_option       = "Empty"
-  disk_size_gb        = 32
+  disk_size_gb        = var.data_disk_size_gb
   zone                = "2"
 
   tags = local.common_tags
