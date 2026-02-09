@@ -1,4 +1,4 @@
-# RedCross SQL Server Always On Availability Group - Azure Terraform Deployment
+# SQL Server Always On Availability Group - Azure Terraform Deployment
 
 ## Project Overview
 
