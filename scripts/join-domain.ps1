@@ -136,3 +136,7 @@ Write-Host "`n[Step 4/4] Scheduling reboot in 30 seconds to finalize domain join
 Write-Host "  Completed: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 Stop-Transcript
 shutdown /r /t 30 /c "Rebooting to finalize domain join to $DomainName"
+
+
+# Always exit 0 so the Custom Script Extension reports success
+exit 0
