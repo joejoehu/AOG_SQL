@@ -488,7 +488,7 @@ resource "azurerm_virtual_machine_extension" "dc1_stage1_cse" {
   type_handler_version = "1.10"
 
   settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/dc1-pre.ps1"]
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/main/scripts/dc1-pre.ps1"]
   })
 
   protected_settings = jsonencode({
@@ -721,7 +721,7 @@ resource "azurerm_virtual_machine_extension" "sql1_stage2_cse" {
   type_handler_version = "1.10"
 
   settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/join-domain.ps1"]
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/main/scripts/join-domain.ps1"]
   })
 
   protected_settings = jsonencode({
@@ -747,7 +747,7 @@ resource "azurerm_virtual_machine_extension" "sql2_stage3_cse" {
   type_handler_version = "1.10"
 
   settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/join-domain.ps1"]
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/main/scripts/join-domain.ps1"]
   })
 
   protected_settings = jsonencode({
