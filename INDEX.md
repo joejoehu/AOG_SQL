@@ -1,4 +1,4 @@
-# RedCross SQL Server Always On AG - Terraform Deployment
+# SQL Server Always On AG - Terraform Deployment
 ## Complete Implementation Index
 
 **Project Location**: `/Users/joe/DATA/CODE/AOG_SQL`  

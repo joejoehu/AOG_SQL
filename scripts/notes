@@ -3,11 +3,9 @@ az vm run-command invoke \
   --name VM-DC-2 \
   --command-id RunPowerShellScript \
   --scripts @dc-pre.ps1
-  
+
 
 az network vnet update \
   --name vnet-redcross \
   --resource-group  rg-redcross-sql \
   --dns-servers 10.38.0.4
-
-
