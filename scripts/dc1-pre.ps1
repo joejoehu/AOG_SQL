@@ -79,4 +79,3 @@ finally {
 
 # Always exit 0 so the Custom Script Extension reports success
 exit 0
-

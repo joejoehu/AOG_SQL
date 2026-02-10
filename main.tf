@@ -473,9 +473,13 @@ resource "azurerm_windows_virtual_machine" "dc_vm1" {
   tags = local.common_tags
 }
 
+
 # ============================================================================
+
 # STAGE 1 CUSTOM SCRIPT EXTENSION FOR DC-VM-1
+
 # ============================================================================
+
 resource "azurerm_virtual_machine_extension" "dc1_stage1_cse" {
   name                 = "dc1-stage1-cse"
   virtual_machine_id   = azurerm_windows_virtual_machine.dc_vm1.id
@@ -505,57 +509,6 @@ resource "azurerm_virtual_machine_extension" "dc1_stage1_cse" {
   tags = local.common_tags
 }
 
-# ============================================================================
-# STAGE 2 CUSTOM SCRIPT EXTENSION - JOIN SQL-VM-1 TO DOMAIN
-# ============================================================================
-resource "azurerm_virtual_machine_extension" "sql1_stage2_cse" {
-  name                 = "sql1-stage2-cse"
-  virtual_machine_id   = azurerm_windows_virtual_machine.sql_vm1.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-
-  settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/join-domain.ps1"]
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File join-domain.ps1 -DomainAdminPassword ${local.domain_admin_password}"
-  })
-
-  depends_on = [
-    azurerm_virtual_machine_extension.dc1_stage1_cse,
-    azurerm_virtual_machine_data_disk_attachment.sql_vm1_data_disk_attach
-  ]
-
-  tags = local.common_tags
-}
-
-# ============================================================================
-# STAGE 3 CUSTOM SCRIPT EXTENSION - JOIN SQL-VM-2 TO DOMAIN
-# ============================================================================
-resource "azurerm_virtual_machine_extension" "sql2_stage3_cse" {
-  name                 = "sql2-stage3-cse"
-  virtual_machine_id   = azurerm_windows_virtual_machine.sql_vm2.id
-  publisher            = "Microsoft.Compute"
-  type                 = "CustomScriptExtension"
-  type_handler_version = "1.10"
-
-  settings = jsonencode({
-    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/join-domain.ps1"]
-  })
-
-  protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File join-domain.ps1 -DomainAdminPassword ${local.domain_admin_password}"
-  })
-
-  depends_on = [
-    azurerm_virtual_machine_extension.sql1_stage2_cse,
-    azurerm_virtual_machine_data_disk_attachment.sql_vm2_data_disk_attach
-  ]
-
-  tags = local.common_tags
-}
 
 resource "azurerm_windows_virtual_machine" "dc_vm2" {
   name                = "vm-dc-2"
@@ -753,4 +706,58 @@ resource "azurerm_virtual_machine_data_disk_attachment" "sql_vm2_data_disk_attac
   virtual_machine_id = azurerm_windows_virtual_machine.sql_vm2.id
   lun                = 0
   caching            = "ReadWrite"
+}
+
+
+
+# ============================================================================
+# STAGE 2 CUSTOM SCRIPT EXTENSION - JOIN SQL-VM-1 TO DOMAIN
+# ============================================================================
+resource "azurerm_virtual_machine_extension" "sql1_stage2_cse" {
+  name                 = "sql1-stage2-cse"
+  virtual_machine_id   = azurerm_windows_virtual_machine.sql_vm1.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = jsonencode({
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/join-domain.ps1"]
+  })
+
+  protected_settings = jsonencode({
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File join-domain.ps1 -DomainAdminPassword ${local.domain_admin_password}"
+  })
+
+  depends_on = [
+    azurerm_virtual_machine_extension.dc1_stage1_cse,
+    azurerm_virtual_machine_data_disk_attachment.sql_vm1_data_disk_attach
+  ]
+
+  tags = local.common_tags
+}
+
+# ============================================================================
+# STAGE 3 CUSTOM SCRIPT EXTENSION - JOIN SQL-VM-2 TO DOMAIN
+# ============================================================================
+resource "azurerm_virtual_machine_extension" "sql2_stage3_cse" {
+  name                 = "sql2-stage3-cse"
+  virtual_machine_id   = azurerm_windows_virtual_machine.sql_vm2.id
+  publisher            = "Microsoft.Compute"
+  type                 = "CustomScriptExtension"
+  type_handler_version = "1.10"
+
+  settings = jsonencode({
+    fileUris = ["https://raw.githubusercontent.com/joejoehu/AOG_SQL/refs/heads/main/scripts/join-domain.ps1"]
+  })
+
+  protected_settings = jsonencode({
+    commandToExecute = "powershell -ExecutionPolicy Bypass -File join-domain.ps1 -DomainAdminPassword ${local.domain_admin_password}"
+  })
+
+  depends_on = [
+    azurerm_virtual_machine_extension.sql1_stage2_cse,
+    azurerm_virtual_machine_data_disk_attachment.sql_vm2_data_disk_attach
+  ]
+
+  tags = local.common_tags
 }
