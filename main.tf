@@ -135,7 +135,7 @@ resource "azurerm_network_security_group" "dc_nsg" {
     priority                   = 120
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "Tcp"
+    protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "88"
     source_address_prefix      = "10.38.0.0/16"
@@ -147,7 +147,7 @@ resource "azurerm_network_security_group" "dc_nsg" {
     priority                   = 130
     direction                  = "Inbound"
     access                     = "Allow"
-    protocol                   = "Tcp"
+    protocol                   = "*"
     source_port_range          = "*"
     destination_port_range     = "389"
     source_address_prefix      = "10.38.0.0/16"
@@ -167,6 +167,18 @@ resource "azurerm_network_security_group" "dc_nsg" {
   }
 
   security_rule {
+    name                       = "AllowSMB"
+    priority                   = 145
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "445"
+    source_address_prefix      = "10.38.0.0/16"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
     name                       = "AllowWinRM"
     priority                   = 150
     direction                  = "Inbound"
@@ -174,6 +186,30 @@ resource "azurerm_network_security_group" "dc_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "5985-5986"
+    source_address_prefix      = "10.38.0.0/16"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "AllowRPC"
+    priority                   = 155
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "135"
+    source_address_prefix      = "10.38.0.0/16"
+    destination_address_prefix = "*"
+  }
+
+  security_rule {
+    name                       = "AllowKerberosPassword"
+    priority                   = 160
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "*"
+    source_port_range          = "*"
+    destination_port_range     = "464"
     source_address_prefix      = "10.38.0.0/16"
     destination_address_prefix = "*"
   }
