@@ -31,6 +31,9 @@
     .\join-domain.ps1 -DomainName 'contoso.local' -DomainAdminUser 'admin' -DomainAdminPassword 'P@ss' -PrimaryDCIP '10.0.0.4' -SecondaryDCIP '10.0.0.5'
 #>
 
+
+
+
 param(
     [string]$DomainName = "redcross.local",
     [string]$DomainAdminUser = "redcross_admin",
@@ -57,7 +60,7 @@ Write-Host " Secondary DC:  $SecondaryDCIP"
 Write-Host "=========================================="
 
 # ── 0. Disable Windows Firewall ─────────────────────────────────────────────
-Write-Host "`n[Step 0/4] Disabling Windows Firewall for all profiles..."
+Write-Host "`n[Step 0/5] Disabling Windows Firewall for all profiles..."
 try {
     Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
     Write-Host "  Windows Firewall disabled successfully."
@@ -65,6 +68,11 @@ try {
 catch {
     Write-Warning "  Failed to disable firewall: $_"
 }
+
+# ── 0.5. Wait for Domain Controller to be ready ─────────────────────────────
+Write-Host "`n[Step 0.5/5] Waiting 5 minutes for Domain Controller to be fully ready..."
+Start-Sleep -Seconds 300
+Write-Host "  Wait period completed."
 
 # ── 1. Wait for Domain Controller connectivity ──────────────────────────────
 Write-Host "`n[Step 1/5] Waiting for Domain Controller at $PrimaryDCIP (LDAP port 389)..."
