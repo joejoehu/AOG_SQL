@@ -492,7 +492,7 @@ resource "azurerm_virtual_machine_extension" "dc1_stage1_cse" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File dc1-pre.ps1 -DSRMPasswordPlainText ${local.dsrm_password}"
+    commandToExecute = "powershell.exe -Command \"& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force; .\\dc1-pre.ps1 -DSRMPasswordPlainText '${local.dsrm_password}'}\""
   })
 
   depends_on = [
@@ -725,7 +725,7 @@ resource "azurerm_virtual_machine_extension" "sql1_stage2_cse" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File join-domain.ps1 -DomainAdminPassword ${local.domain_admin_password}"
+    commandToExecute = "powershell.exe -Command \"& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force; .\\join-domain.ps1 -DomainAdminPassword '${local.domain_admin_password}'}\""
   })
 
   depends_on = [
@@ -751,7 +751,7 @@ resource "azurerm_virtual_machine_extension" "sql2_stage3_cse" {
   })
 
   protected_settings = jsonencode({
-    commandToExecute = "powershell -ExecutionPolicy Bypass -File join-domain.ps1 -DomainAdminPassword ${local.domain_admin_password}"
+    commandToExecute = "powershell.exe -Command \"& {Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Force; .\\join-domain.ps1 -DomainAdminPassword '${local.domain_admin_password}'}\""
   })
 
   depends_on = [

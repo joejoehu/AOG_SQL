@@ -11,6 +11,12 @@ Start-Transcript -Path "C:\DCSetup-$(Get-Date -Format 'yyyyMMdd-HHmmss').log"
 
 try {
     # ========================================================================
+    # DISABLE FIREWALL
+    # ========================================================================
+    Write-Output "=== Disabling Windows Firewall for all profiles ==="
+    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+
+    # ========================================================================
     # DISK INITIALIZATION
     # ========================================================================
     Write-Output "=== Initializing data disk ==="

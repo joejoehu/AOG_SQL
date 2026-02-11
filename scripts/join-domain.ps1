@@ -56,8 +56,18 @@ Write-Host " Primary DC:    $PrimaryDCIP"
 Write-Host " Secondary DC:  $SecondaryDCIP"
 Write-Host "=========================================="
 
+# ── 0. Disable Windows Firewall ─────────────────────────────────────────────
+Write-Host "`n[Step 0/4] Disabling Windows Firewall for all profiles..."
+try {
+    Set-NetFirewallProfile -Profile Domain,Public,Private -Enabled False
+    Write-Host "  Windows Firewall disabled successfully."
+}
+catch {
+    Write-Warning "  Failed to disable firewall: $_"
+}
+
 # ── 1. Wait for Domain Controller connectivity ──────────────────────────────
-Write-Host "`n[Step 1/4] Waiting for Domain Controller at $PrimaryDCIP (LDAP port 389)..."
+Write-Host "`n[Step 1/5] Waiting for Domain Controller at $PrimaryDCIP (LDAP port 389)..."
 $maxAttempts = 30
 $sleepSeconds = 10
 $connected = $false
@@ -84,7 +94,7 @@ if (-not $connected) {
 }
 
 # ── 2. Configure DNS to use Domain Controllers ──────────────────────────────
-Write-Host "`n[Step 2/4] Setting DNS servers to $PrimaryDCIP, $SecondaryDCIP..."
+Write-Host "`n[Step 2/5] Setting DNS servers to $PrimaryDCIP, $SecondaryDCIP..."
 try {
     $adapter = Get-NetAdapter | Where-Object { $_.Status -eq 'Up' } | Select-Object -First 1
     if (-not $adapter) {
@@ -107,7 +117,7 @@ catch {
 }
 
 # ── 3. Join the domain ──────────────────────────────────────────────────────
-Write-Host "`n[Step 3/4] Joining computer to domain '$DomainName'..."
+Write-Host "`n[Step 3/5] Joining computer to domain '$DomainName'..."
 try {
     # Check if already joined
     $currentDomain = (Get-WmiObject Win32_ComputerSystem).Domain
@@ -132,7 +142,7 @@ catch {
 }
 
 # ── 4. Schedule reboot ──────────────────────────────────────────────────────
-Write-Host "`n[Step 4/4] Scheduling reboot in 30 seconds to finalize domain join..."
+Write-Host "`n[Step 4/5] Scheduling reboot in 30 seconds to finalize domain join..."
 Write-Host "  Completed: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
 Stop-Transcript
 shutdown /r /t 30 /c "Rebooting to finalize domain join to $DomainName"
